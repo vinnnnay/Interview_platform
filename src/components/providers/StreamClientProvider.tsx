@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import LoaderUI from "../LoaderUI";
 import { streamTokenProvider } from "@/actions/stream.actions";
 
-const StreamClientProvider = ({ children }: { children: ReactNode }) => {
+const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
   const [streamVideoClient, setStreamVideoClient] = useState<StreamVideoClient>();
   const { user, isLoaded } = useUser();
 
@@ -17,10 +17,14 @@ const StreamClientProvider = ({ children }: { children: ReactNode }) => {
       apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
       user: {
         id: user?.id,
-        name: user?.firstName || "" + " " + user?.lastName || "" || user?.id,
+        name: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || user?.id,
         image: user?.imageUrl,
       },
-      tokenProvider: streamTokenProvider,
+      tokenProvider: async () => {
+        const token = await streamTokenProvider();
+        if (!token) throw new Error("Failed to fetch Stream token");
+        return token;
+      },
     });
 
     setStreamVideoClient(client);
@@ -31,5 +35,4 @@ const StreamClientProvider = ({ children }: { children: ReactNode }) => {
   return <StreamVideo client={streamVideoClient}>{children}</StreamVideo>;
 };
 
-export default StreamClientProvider;
-
+export default StreamVideoProvider;
