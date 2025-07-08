@@ -1,3 +1,4 @@
+// convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -10,7 +11,7 @@ export default defineSchema({
     clerkId: v.string(),
   }).index("by_clerk_id", ["clerkId"]),
 
-   interviews: defineTable({
+  interviews: defineTable({
     title: v.string(),
     description: v.optional(v.string()),
     startTime: v.number(),
@@ -23,13 +24,10 @@ export default defineSchema({
     .index("by_candidate_id", ["candidateId"])
     .index("by_stream_call_id", ["streamCallId"]),
 
-
-    comments: defineTable({
+  comments: defineTable({
     content: v.string(),
     rating: v.number(),
     interviewerId: v.string(),
     interviewId: v.id("interviews"),
   }).index("by_interview_id", ["interviewId"]),
-
-
-})
+});
